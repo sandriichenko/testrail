@@ -20,7 +20,8 @@ class Base():
         all_run = self.get_plan(plan_id)#!get_plans
         tempest_runs = []
         for run in all_run['entries']:
-            if 'Tempest 9.0' in run['name']:
+            if 'Tempest' in run['name'] and 'Separated' not in run[
+                'name']:
                 tempest_runs.append(run)
         return tempest_runs
 
@@ -75,7 +76,8 @@ class Base():
                 get_plan = self.get_plan(str(plans.get(u'id')))
                 for plan in get_plan['entries']:
                     plan = plan['runs'][0]
-                    if 'Tempest' in plan['name']:
+                    if 'Tempest' in plan['name'] and 'Separated' not in plan[
+                        'name']:
                         send_get_tests = 'get_tests/' + str(plan[u'id'])
                         get_tests = self.client.send_get(send_get_tests)
                         for test in get_tests:

@@ -24,7 +24,7 @@ add_result = {
 if __name__ == '__main__':
 
 
-    plans = 15131
+    plans = *****
 
     call = Base()
 
@@ -51,7 +51,7 @@ if __name__ == '__main__':
                 logging.info(str(test[u'title']) + str(test['id']))
                 if launchpad_bug == 0:
                     print "This test is failed at first"
-                    logging.info("This test is failed at first" )
+                    logging.info("This test is failed at first")
                 else:
                     add_result['status_id'] = 8
                     add_result['custom_launchpad_bug'] = launchpad_bug
