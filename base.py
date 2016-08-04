@@ -7,6 +7,12 @@ class Base():
         self.client.user = ''
         self.client.password = ''
 
+    def send_post_add_result (self, id, bug, status_id, add_result):
+        add_result['status_id'] = status_id
+        add_result['custom_launchpad_bug'] = bug
+        send_add_result = 'add_result/' + str(id)
+        return self.client.send_post(send_add_result, add_result)
+
     def get_plans(self, project_id):#!
         return self.client.send_get('get_plans/{0}'.format(project_id))
 
@@ -20,8 +26,7 @@ class Base():
         all_run = self.get_plan(plan_id)#!get_plans
         tempest_runs = []
         for run in all_run['entries']:
-            if 'Tempest' in run['name'] and 'Separated' not in run[
-                'name']:
+            if 'Tempest' in run['name']:
                 tempest_runs.append(run)
         return tempest_runs
 
@@ -59,6 +64,14 @@ class Base():
     def get_run(self, run_id):
         return self.client.send_get('get_run/{0}'.format(run_id))
 
+    def get_last_tempest_run(self, get_plans):
+        for plans in get_plans:
+            # print dict
+            if (plans.get(u'passed_count') > 1000 or plans.get(
+                    u'blocked_count') > 1000 )and '9.1' in plans.get(u'name'):
+                # print plans.get(u'id')
+                return plans.get(u'id')
+
     def add_result(self,test_id , result_to_add):
         return self.client.send_post('add_result/{0}'.format(test_id['id']),
                                      result_to_add)
@@ -69,23 +82,25 @@ class Base():
             if plans.get(u'passed_count') > 1000:
                 get_plan = self.get_plan(str(plans.get(u'id')))
 
-    def get_link_on_bugs(self, test_port):
+    def get_info_about_bugs(self, test_port):
         get_plans = self.get_plans(3)
         for plans in get_plans:
             if plans.get(u'passed_count') > 1000:
                 get_plan = self.get_plan(str(plans.get(u'id')))
                 for plan in get_plan['entries']:
                     plan = plan['runs'][0]
-                    if 'Tempest' in plan['name'] and 'Separated' not in plan[
-                        'name']:
+                    if 'Tempest' in plan['name']:
                         send_get_tests = 'get_tests/' + str(plan[u'id'])
                         get_tests = self.client.send_get(send_get_tests)
                         for test in get_tests:
-                            if test[u'title'] == test_port \
-                                    and test[u'status_id'] == 8:
+                            if test[u'title'] == test_port and \
+                                    (test[u'status_id'] == 8
+                                     or test[ u'status_id'] == 9
+                                     or test[u'status_id'] == 6 ):
                                 send_get_results = 'get_results/' + str(
                                     test[u'id'])
                                 get_results = self.client.send_get(
                                     send_get_results)
-                                return get_results[0][u'custom_launchpad_bug']
-        return 0
+                                return test[u'status_id'], get_results[0][
+                                    u'custom_launchpad_bug']
+        return 0, 0

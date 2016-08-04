@@ -24,7 +24,7 @@ add_result = {
 if __name__ == '__main__':
 
 
-    plans = *****
+    plans =  17371
 
     call = Base()
 
@@ -45,17 +45,18 @@ if __name__ == '__main__':
         logging.info(str(id_of_tempest_runs.get(id_run)) + str(id_run))
         get_tests = call.get_tests(id_run)
         for test in get_tests:
-            if test[u'status_id'] == 5:
-                launchpad_bug = call.get_link_on_bugs(test[u'title'])
+            if test[u'status_id'] == 5:#test[u'status_id'] == 6 or test[u'status_id'] == 9 or test[u'status_id'] == 8:
+                status_id, bug_info = call.get_info_about_bugs(test[u'title'])
                 print test[u'title'], test['id']
                 logging.info(str(test[u'title']) + str(test['id']))
-                if launchpad_bug == 0:
-                    print "This test is failed at first"
-                    logging.info("This test is failed at first")
-                else:
-                    add_result['status_id'] = 8
-                    add_result['custom_launchpad_bug'] = launchpad_bug
+                if status_id == 6 or status_id == 9 or status_id == 8:
+                    add_result['status_id'] = status_id
+                    add_result['custom_launchpad_bug'] = bug_info
                     send_add_result = 'add_result/' + str(test['id'])
+                    print add_result['status_id'],  add_result['custom_launchpad_bug'], test['id'], test['custom_test_case_description']
                     result = call.client.send_post(send_add_result, add_result)
                     print result
                     logging.info(str(result))
+                else:
+                    print "This test is failed at first"
+                    logging.info("This test is failed at first")
