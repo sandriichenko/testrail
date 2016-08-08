@@ -24,7 +24,8 @@ add_result = {
 if __name__ == '__main__':
 
 
-    plans =  17371
+    plans =  17828
+
 
     call = Base()
 
@@ -45,8 +46,13 @@ if __name__ == '__main__':
         logging.info(str(id_of_tempest_runs.get(id_run)) + str(id_run))
         get_tests = call.get_tests(id_run)
         for test in get_tests:
-            if test[u'status_id'] == 5:#test[u'status_id'] == 6 or test[u'status_id'] == 9 or test[u'status_id'] == 8:
-                status_id, bug_info = call.get_info_about_bugs(test[u'title'])
+            # if test[u'status_id'] == 6 and (len( call.get_test_result (test[u'id']))) ==1 :# (len(get_results = call.get_test_result (test[u'id'] )) ==1 ):#test[u'status_id'] == 6 or test[u'status_id'] == 5 or test[u'status_id'] == 8
+            #     #get_results = call.get_test_result (test[u'id'] )
+            #     print test
+            if test[u'status_id'] == 5 or \
+                    (test[u'status_id'] == 6
+                     and (len( call.get_test_result (test[u'id']))) ==1 ):#test[u'status_id'] == 6 or test[u'status_id'] == 9 or test[u'status_id'] == 8:
+                status_id, bug_info = call.get_info_about_bugs(test['custom_test_case_description'])
                 print test[u'title'], test['id']
                 logging.info(str(test[u'title']) + str(test['id']))
                 if status_id == 6 or status_id == 9 or status_id == 8:
@@ -60,3 +66,4 @@ if __name__ == '__main__':
                 else:
                     print "This test is failed at first"
                     logging.info("This test is failed at first")
+

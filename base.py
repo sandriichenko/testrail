@@ -82,10 +82,10 @@ class Base():
             if plans.get(u'passed_count') > 1000:
                 get_plan = self.get_plan(str(plans.get(u'id')))
 
-    def get_info_about_bugs(self, test_port):
+    def get_info_about_bugs(self, description):
         get_plans = self.get_plans(3)
         for plans in get_plans:
-            if plans.get(u'passed_count') > 1000:
+            if plans.get(u'passed_count') > 1000 and '9.1' in plans.get(u'name'):
                 get_plan = self.get_plan(str(plans.get(u'id')))
                 for plan in get_plan['entries']:
                     plan = plan['runs'][0]
@@ -93,10 +93,11 @@ class Base():
                         send_get_tests = 'get_tests/' + str(plan[u'id'])
                         get_tests = self.client.send_get(send_get_tests)
                         for test in get_tests:
-                            if test[u'title'] == test_port and \
-                                    (test[u'status_id'] == 8
+                            if test['custom_test_case_description'] == description \
+                                    and (len( self.get_test_result (test[u'id']))) > 1  \
+                                    and (test[u'status_id'] == 8
                                      or test[ u'status_id'] == 9
-                                     or test[u'status_id'] == 6 ):
+                                     or test[u'status_id'] == 6):
                                 send_get_results = 'get_results/' + str(
                                     test[u'id'])
                                 get_results = self.client.send_get(
@@ -104,3 +105,14 @@ class Base():
                                 return test[u'status_id'], get_results[0][
                                     u'custom_launchpad_bug']
         return 0, 0
+
+
+# i = [{u'assignedto_id': None, u'comment': None, u'custom_baseline_stdev': None, u'status_id': 6, u'custom_launchpad_bug': u'https://bugs.launchpad.net/mos/+bug/1442193', u'custom_stdev': None, u'created_by': 85, u'elapsed': None,
+#       u'custom_baseline_throughput': None, u'created_on': 1470324528, u'version': None, u'custom_test_case_steps_results': [{u'content': u'', u'expected': u'', u'actual': u'', u'status_id': 3}], u'defects': None, u'custom_throughput': None,
+#       u'test_id': 10696624, u'id': 24849666},
+#      {u'assignedto_id': None, u'comment': None, u'custom_baseline_stdev': None, u'status_id': 8, u'custom_launchpad_bug': u'https://bugs.launchpad.net/mos/+bug/1442193', u'custom_stdev': None, u'created_by': 85,
+#       u'elapsed': None, u'custom_baseline_throughput': None, u'created_on': 1470324505, u'version': None, u'custom_test_case_steps_results': [{u'content': u'', u'expected': u'', u'actual': u'', u'status_id': 3}],
+#       u'defects': None, u'custom_throughput': None, u'test_id': 10696624, u'id': 24849664},
+#      {u'assignedto_id': None, u'comment': u'test failed\n\nEnv: **Tempest-9.0_Ceph_DVR_Sahara_Ceilometer_Ironic**\n\n[Jenkins Job Result](http://cz7776.bud.mirantis.net:8080/jenkins/view/Tempest_9.%D0%A5/job/9.0_Tempest_Ceph_no_ssl/lastSuccessfulBuild/artifact/report.xmltestReport/tempest.api.orchestration.stacks.test_swift_resources/SwiftResourcesTestJSON/test_metadata_id_fda06135_6777_4594_aefa_0f6107169698_object_storage_/)\n\n\n[Trace, logs](http://paste.openstack.org/show/548088/)\n\n\n---\n\n**Trace:**\n\n    Traceback (most recent call last):\n\n      File "/home/rally/.rally/tempest/for-deployment-670f63eb-2e7f-4f4a-b48b-4c3466935722/tempest/test.py", line 273, in setUpClass\n\n        six.reraise(etype, value, trace)\n\n      File "/home/rally/.rally/tempest/for-deployment-670f63eb-2e7f-4f4a-b48b-4c3466935722/tempest/test.py", line 266, in setUpClass\n\n        cls.resource_setup()\n\n      File "/home/rally/.rally/tempest/for-deployment-670f63eb-2e7f-4f4a-b48b-4c3466935722/tempest/api/orchestration/stacks/test_swift_resources.py", line 56, in resource_setup\n\n        cls.client.wait_for_stack_status(cls.stack_id, \'CREATE_COMPLETE\')\n\n      File "/home/rally/.rally/tempest/for-deployment-670f63eb-2e7f-4f4a-b48b-4c3466935722/tempest/services/orchestration/json/orchestration_client.py", line 174, in wait_for_stack_status\n\n        stack_status_reason=body[\'stack_status_reason\'])\n\n    tempest.exceptions.StackBuildErrorException: Stack e76a2be1-1a30-47db-8c0c-0b86f8b49877 is in CREATE_FAILED status due to \'Resource CREATE failed: ClientException: resources.SwiftContainerWebsite: Container PUT failed: http://10.109.4.6:8080/swift/v1/tempest-heat-1732870417-SwiftContainerWebsite-a7spb2zwffpk 401 Unauthorized   AccessDenied\'\n\n',
+#       u'custom_baseline_stdev': None, u'status_id': 5, u'custom_launchpad_bug': None, u'custom_stdev': None, u'created_by': 48, u'elapsed': u'', u'custom_baseline_throughput': None, u'created_on': 1470304543, u'version': None,
+#       u'custom_test_case_steps_results': None, u'defects': None, u'custom_throughput': None, u'test_id': 10696624, u'id': 24835909}]
