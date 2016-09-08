@@ -44,6 +44,8 @@ def update_results():
                     (test[u'status_id'] == 6
                      and (len(call.get_test_result(test[
                                                        u'id']))) == 1):
+                if test['id'] in bugs:
+                    continue
                 status_id, bug_info = call.get_info_about_bugs(
                     test['custom_test_case_description'])
                 print test[u'title'], test['id']
@@ -61,12 +63,16 @@ def update_results():
                 else:
                     print "This test is failed at first"
                     logging.info("This test is failed at first")
+                    if test['id'] not in bugs:
+                        bugs.append(test['id'])
+
 
 
 if __name__ == '__main__':
 
 
     plans =  sys.argv[1]
+    bugs = []
 
     for i in range(7):
         try:
